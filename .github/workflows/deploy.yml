@@ -29,7 +29,7 @@ jobs:
           aws-region: us-west-1
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Lambda package
         run: npm run build:lambda
@@ -38,7 +38,4 @@ jobs:
         run: aws s3 sync frontend/ s3://adonyas-expense-tracker-site --delete
 
       - name: Deploy Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name ExpenseTrackerHandler \
-            --zip-file fileb://lambda.zip
+        run: aws lambda update-function-code --function-name ExpenseTrackerHandler --zip-file fileb://lambda.zip
