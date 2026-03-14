@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import crypto from "node:crypto";
 
 const REGION = process.env.AWS_REGION || "us-east-1";
@@ -33,6 +33,11 @@ export const handler = async (event) => {
     if (method === "GET" && rawPath === "/expenses/monthly-total") {
       return await getMonthlyTotal(event);
     }
+
+    if (method === "DELETE" && rawPath === "/expenses") {
+      return await deleteExpense(event);
+    }
+    
 
     return json(404, { message: "Route not found." });
   } catch (error) {
@@ -104,6 +109,29 @@ async function listExpenses() {
 
   return json(200, { items: response.Items || [] });
 }
+async function deleteExpense(event) {
+  const body = parseJson(event?.body);
+
+  const expenseKey = String(body?.expenseKey || "").trim();
+
+  if (!expenseKey) {
+    return json(400, { message: "expenseKey is required." });
+  }
+
+  await ddb.send(
+    new DeleteCommand({
+      TableName: TABLE_NAME,
+      Key: {
+        ownerId: OWNER_ID,
+        expenseKey
+      }
+    })
+  );
+
+  return json(200, { message: "Expense deleted." });
+}
+
+
 
 async function getMonthlyTotal(event) {
   const month = getMonthParam(event);
@@ -166,7 +194,7 @@ function json(statusCode, body) {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "OPTIONS,GET,POST"
+      "Access-Control-Allow-Methods": "OPTIONS,GET,POST,DELETE"
     },
     body: JSON.stringify(body)
   };
