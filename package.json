@@ -1,0 +1,10 @@
+{
+  "name": "expense-tracker-serverless",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:lambda": "rm -rf dist lambda.zip && mkdir -p dist && cp backend/index.mjs dist/index.mjs && cp backend/package.json dist/package.json && npm install --prefix dist --omit=dev && cd dist && zip -qr ../lambda.zip .",
+    "test:smoke": "npm run build:lambda && node backend/smoke-test.mjs"
+  }
+}
