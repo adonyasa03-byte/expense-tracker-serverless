@@ -82,12 +82,49 @@ async function loadExpenses() {
             </div>
             <div>${escapeHtml(item.expenseDate)}</div>
             <div>${escapeHtml(item.note || "No note")}</div>
+            <button type="button" class="delete-expense-button" data-expense-key="${escapeHtml(item.expenseKey)}">
+              Delete
+            </button>
           </article>
         `
       )
       .join("");
+
+    document.querySelectorAll(".delete-expense-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await deleteExpense(button.dataset.expenseKey);
+      });
+    });
   } catch (error) {
     expensesList.textContent = error.message;
+  }
+}
+
+async function deleteExpense(expenseKey) {
+  const confirmed = window.confirm("Delete this expense?");
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/expenses`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ expenseKey })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete expense.");
+    }
+
+    formStatus.textContent = "Expense deleted.";
+    await Promise.all([loadExpenses(), loadMonthlyTotal()]);
+  } catch (error) {
+    formStatus.textContent = error.message;
   }
 }
 
