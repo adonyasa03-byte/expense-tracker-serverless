@@ -1,99 +1,95 @@
 # Serverless Personal Expense Tracker
 
-A serverless web application for tracking personal spending, built on AWS using Amazon S3, API Gateway, AWS Lambda, and DynamoDB. The app supports adding expenses, viewing transaction history, and calculating monthly spending totals through a simple browser-based interface.
+A serverless web application for tracking personal expenses on AWS. The app allows users to add expenses, view transaction history, calculate monthly totals, and delete saved expenses through a browser-based interface backed by managed AWS services.
 
 ## Project Summary
 
-Built a serverless personal expense tracker using Amazon S3 for static hosting, API Gateway for HTTP endpoints, AWS Lambda for backend processing, and DynamoDB for expense storage and monthly total calculations.
+Built a serverless personal expense tracker using Amazon S3 for static frontend hosting, API Gateway for HTTP endpoints, AWS Lambda for backend logic, and DynamoDB for storing and managing expense data.
 
 ## Overview
 
-This project was designed to demonstrate a practical serverless architecture using AWS managed services. The goal was to build a small but complete application that shows how a frontend, API layer, compute layer, and database can work together without relying on a traditional always-on backend server.
+This project was built to demonstrate a practical AWS serverless architecture through a simple but complete full-stack application. The goal was to connect a static frontend, API layer, serverless compute, and managed database into a working system that handles real user actions end to end.
 
-By using managed AWS services, the application stays lightweight while still reflecting common cloud design patterns used in production environments.
+The application is designed around common cloud patterns used in modern web development, with AWS handling the infrastructure instead of relying on a traditional always-on backend server.
 
 ## Features
 
 - Add a new expense
 - View all recorded expenses
-- Calculate spending totals by month
-- Host a static frontend in AWS
-- Process backend requests through a serverless API architecture
+- Calculate monthly spending totals
+- Delete an existing expense
+- Host the frontend as a static site in Amazon S3
+- Deploy backend logic through AWS Lambda
 
 ## Architecture
 
-The application is built with the following AWS services:
+This application uses the following AWS services:
 
-- **Amazon S3** for hosting the static frontend
-- **Amazon API Gateway** for exposing backend HTTP endpoints
+- **Amazon S3** for static website hosting
+- **Amazon API Gateway** for exposing backend endpoints
 - **AWS Lambda** for request handling and business logic
-- **Amazon DynamoDB** for storing expense records
+- **Amazon DynamoDB** for expense storage
 
 ## Application Flow
 
-1. The frontend is served from Amazon S3.
-2. User actions in the browser trigger HTTP requests to API Gateway.
+1. The frontend is loaded from Amazon S3.
+2. User actions in the browser send requests to API Gateway.
 3. API Gateway routes those requests to a Lambda function.
 4. Lambda processes the request and interacts with DynamoDB.
-5. The response is returned to the frontend and displayed in the UI.
+5. The response is returned to the frontend and displayed to the user.
 
-This architecture follows a widely used serverless pattern that reduces infrastructure management while remaining scalable and cost-conscious.
+This architecture follows a standard serverless pattern that reduces infrastructure management while still supporting a complete web application workflow.
 
-## Design Rationale
+## API Functionality
 
-This project uses a serverless approach to keep the architecture simple and focused. Each service has a clear responsibility:
+The backend currently supports four main operations:
 
-- **S3** delivers the frontend as static web content
-- **API Gateway** provides a clean interface between the browser and backend
-- **Lambda** runs application logic only when requests are made
-- **DynamoDB** stores structured expense data in a managed NoSQL database
+- `POST /expenses` to create a new expense
+- `GET /expenses` to return all saved expenses
+- `GET /expenses/monthly-total` to calculate spending totals for a selected month
+- `DELETE /expenses` to remove an existing expense
 
-This design made it possible to build and deploy a complete cloud application while gaining hands-on experience with service integration, request flow, and AWS resource configuration.
-
-## Backend Functionality
-
-The backend is organized around three core operations:
-
-- `POST /expenses` to add a new expense
-- `GET /expenses` to retrieve all expenses
-- `GET /expenses/monthly-total` to calculate monthly totals
-
-Each expense record can include:
+Each expense record includes data such as:
 
 - expense date
 - category
 - amount
 - note
+- generated expense ID
+- generated expense key for lookup and deletion
 
-The monthly total endpoint retrieves expenses for a selected month and calculates the aggregate amount before returning the result to the frontend.
+## Technical Notes
 
-## Key Takeaways
+The application uses a DynamoDB table keyed to support both listing expenses and deleting specific records. The monthly total feature works by querying expenses for a given month and summing the matching amounts. The delete feature works by sending the selected expense key from the frontend to the backend, which then removes the matching item from DynamoDB.
+
+The frontend is connected to the backend through API Gateway, and the project is set up so GitHub-based updates can deploy changes to the frontend and backend automatically.
+
+## What I Learned
 
 This project strengthened my understanding of:
 
 - serverless application design on AWS
 - API-driven communication between frontend and backend systems
 - request handling with AWS Lambda
-- data storage and retrieval patterns in DynamoDB
-- IAM-based permissions between AWS services
-- CORS configuration for browser-to-API communication
-- how managed cloud services reduce operational overhead
+- querying and deleting data in DynamoDB
+- configuring API routes and CORS in API Gateway
+- IAM permissions between AWS services
+- managing deployment workflows for cloud-hosted applications
 
-It also provided a strong practical example of how AWS services can be combined into a functional full-stack application.
+It also gave me hands-on experience debugging service integration issues across the frontend, API, Lambda, and database layers.
 
 ## Future Improvements
 
-Planned enhancements for future iterations include:
+Planned enhancements include:
 
 - editing existing expenses
-- deleting expenses
-- filtering transactions by category
-- adding attributes such as merchant, payment method, tags, or recurring status
-- visualizing spending with charts and summaries
+- filtering expenses by category
+- adding merchant, payment method, tags, or recurring expense fields
+- adding charts for monthly spending trends
 - introducing user authentication with Amazon Cognito
-- deploying infrastructure with AWS SAM or Terraform
-- serving the frontend through CloudFront for improved delivery and caching
+- moving to infrastructure-as-code with AWS SAM or Terraform
+- serving the frontend through CloudFront for improved caching and delivery
 
 ## Repository Purpose
 
-This repository showcases a serverless AWS project built to demonstrate cloud architecture fundamentals, managed service integration, and end-to-end application design in a practical portfolio setting.
+This repository showcases a serverless AWS project built to demonstrate cloud architecture, service integration, API design, and practical full-stack development in a portfolio-ready format.
